@@ -1,4 +1,4 @@
-from django.contrib.auth.views import LoginView, TemplateView
+from django.contrib.auth.views import LoginView, LogoutView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login
 from django.urls import reverse_lazy
@@ -13,6 +13,10 @@ class MyLoginView(LoginView):
     form_class = MyAuthenticationForm
     redirect_authenticated_user = True
     success_url = reverse_lazy('reviewer:home')
+
+
+class MyLogoutView(LogoutView):
+    pass
 
 
 class MyRegisterView(AnonymousMixins, CreateView):

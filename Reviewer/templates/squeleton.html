@@ -3,13 +3,19 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    {% block title %}
+    {% endblock title %}
 </head>
 
 <body>
+    {% block header_bar %}
+    {% endblock header_bar %}
+    {% if request.user.is_authenticated %}
+        <a href="{% url 'reviewer:logout' %}">Déconnexion</a>
+    {% endif %}
+
     {% block content %}
     {% endblock content %}
-
 </body>
 
 </html>
