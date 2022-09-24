@@ -6,12 +6,8 @@
 
 {% block content %}
     <h2>Inscrivez-vous maintenant :</h2>
-    <a href="{% url 'reviewer:register' %}">S'inscrire</a>
+    <a href="{% url 'reviewer:register' %}">Pas de compte ? S'inscrire</a>
 
     <h2>Connectez-vous :</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Connexion">
-    </form>
+{% include 'Reviewer/form/full.html' %}
 {% endblock content %}

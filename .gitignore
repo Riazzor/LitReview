@@ -1,3 +1,4 @@
 Pipfile*
 *.sqlite3
 __*
+migrations*

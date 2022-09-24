@@ -13,6 +13,9 @@ class MyLoginView(LoginView):
     form_class = MyAuthenticationForm
     redirect_authenticated_user = True
     success_url = reverse_lazy('reviewer:home')
+    extra_context = {
+        'submit_button': 'Connexion',
+    }
 
 
 class MyLogoutView(LogoutView):
@@ -24,6 +27,9 @@ class MyRegisterView(AnonymousMixins, CreateView):
     form_class = MyUserCreationForm
     redirect_authenticated_user = True
     success_url = reverse_lazy('reviewer:home')
+    extra_context = {
+        'submit_button': "S'inscrire",
+    }
 
     def form_valid(self, form):
         redirect_page = super().form_valid(form)
