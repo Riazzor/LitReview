@@ -1,4 +1,7 @@
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django import forms
+
+from .models import Ticket, Review
 
 
 class MyAuthenticationForm(AuthenticationForm):
@@ -44,3 +47,15 @@ class MyUserCreationForm(UserCreationForm):
                 'placeholder': 'Confirmez mot de passe',
             }
         )
+
+
+class TicketForm(forms.ModelForm):
+    class Meta:
+        model = Ticket
+        fields = ['title', 'description', 'image']
+
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['ticket', 'rating', 'headline', 'body']

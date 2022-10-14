@@ -1,0 +1,26 @@
+{% extends 'squeleton.html' %}
+
+{% block title %}
+    <title>Liste de critique</title>
+{% endblock title %}
+
+{% block content %}
+    <p>Liste de critique</p>
+    <table>
+        <thead>
+            <th>Titre</th>
+            <th>Description</th>
+        </thead>
+        <tbody>
+        {% for review in object_list %}
+            <tr>
+                <td>{{ review.headline }}</td>
+                <td>{{ review.body }} </td>
+                <td>
+                    {% include 'reviewer/detail_ticket.html' with ticket=review.ticket %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}
