@@ -14,4 +14,7 @@ urlpatterns = [
     path('ticket-create/', views.CreateTicketView.as_view(), name='create_ticket'),
     path('review/', views.ListReviewView.as_view(), name='list_review'),
     path('review-create/', views.CreateReviewFromTicketView.as_view(), name='create_review'),
+    path('subscription/', views.SearchUserView.as_view(), name='list_subscriber'),
+    path('subscribe/', views.SubscribeView.as_view(), name='subscribe'),
+    path('unsubscribe/', views.UnsubscribeView.as_view(), name='unsubscribe'),
 ]

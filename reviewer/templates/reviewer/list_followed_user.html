@@ -1,0 +1,52 @@
+{% extends 'squeleton.html' %}
+
+{% block title %}
+    <title>Abonnements</title>
+{% endblock title %}
+
+{% block content %}
+    {% if error %}
+    <p>{{ error }}</p>
+    {% endif %}
+    <p>Suivre d'autres utilisateurs</p>
+    <form action="" method="GET">
+        <input type="search" name="name" placeholder="Recherche d'utilisateur">
+        <input type="submit" value="Envoyer">
+    </form>
+    {% for user in searched_users %}
+    <p>{{ user.username }}</p>
+        <form action="{% url 'reviewer:subscribe' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ user.id }}">
+            <input type="submit" value="S'abonner">
+        </form>
+    {% endfor %}
+    <p>Abonnements</p>
+    <table>
+        <tbody>
+        {% for followed_user in followed_users %}
+            <tr>
+                <td>{{ followed_user.followed_user }}</td>
+                <td>
+                    <form action="{% url 'reviewer:unsubscribe' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="{{ followed_user.id }}">
+                        <input type="submit" value="Se désabonner">
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <p>Abonnés</p>
+    <table>
+        <tbody>
+        {% for following_user in following_users %}
+            <tr>
+                <td>{{ following_user.user }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}

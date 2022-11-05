@@ -1,10 +1,9 @@
-from django.core.validators import MinValueValidator, MaxValueValidator
+# from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
 from django.db import models
 
 
 class Ticket(models.Model):
-    # Your Ticket model definition goes here
     title = models.CharField('Titre', max_length=128)
     description = models.TextField(max_length=2048, blank=True)
     user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -13,12 +12,16 @@ class Ticket(models.Model):
 
 
 class Review(models.Model):
+    class Ratings(models.IntegerChoices):
+        TRASH = 0
+        VERY_BAD = 1
+        BAD = 2
+        MEEEE = 3
+        GOOD = 4
+        PERFECT = 5
+
     ticket = models.ForeignKey(to=Ticket, on_delete=models.CASCADE)
-    rating = models.PositiveSmallIntegerField(
-        'Note',
-        # validates that rating must be between 0 and 5
-        validators=[MinValueValidator(0), MaxValueValidator(5)],
-    )
+    rating = models.IntegerField(choices=Ratings.choices)
     user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -29,7 +32,6 @@ class Review(models.Model):
 
 
 class UserFollows(models.Model):
-    # Your UserFollows model definition goes here
     user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='following')
     followed_user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='followed_by')
 
@@ -37,3 +39,9 @@ class UserFollows(models.Model):
         # ensures we don't get multiple UserFollows instances
         # for unique user-user_followed pairs
         unique_together = ('user', 'followed_user', )
+        constraints = [
+            models.CheckConstraint(
+                name="cant_follow_self",
+                check=~models.Q(user=models.F("followed_user")),
+            ),
+        ]
