@@ -10,9 +10,9 @@ urlpatterns = [
     path('register/', views.MyRegisterView.as_view(), name='register'),
 
     path('', views.HomePage.as_view(), name='home'),
-    path('ticket/', views.ListTicketView.as_view(), name='list_ticket'),
+    path('flux/', views.FluxView.as_view(), name='list_ticket'),
     path('ticket-create/', views.CreateTicketView.as_view(), name='create_ticket'),
-    path('review/', views.ListReviewView.as_view(), name='list_review'),
+    path('post/', views.CurrentUserPostsView.as_view(), name='list_review'),
     path('review-create/', views.CreateReviewFromTicketView.as_view(), name='create_review'),
     path('subscription/', views.SearchUserView.as_view(), name='list_subscriber'),
     path('subscribe/', views.SubscribeView.as_view(), name='subscribe'),

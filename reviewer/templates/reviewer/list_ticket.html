@@ -5,20 +5,58 @@
 {% endblock title %}
 
 {% block content %}
-    <p>Liste de ticket</p>
-    <table>
-        <thead>
-            <th>Titre</th>
-            <th>Description</th>
-        </thead>
-        <tbody>
-        {% for ticket in tickets %}
-            <tr>
-                <td>{{ ticket.title }}</td>
-                <td>{{ ticket.description }} </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <p>Flux</p>
+    {% for element in flux_elements %}
+        {% if element.review %}
+            {% with rev=element.review %}
+            <div class="review">
+                {% if request.user == rev.user %}
+                    <p>Vous avez publié une critique</p>
+                {% else %}
+                    <p>{{ rev.user }} a publié une critique</p>
+                {% endif %}
+                <p>{{ rev.time_created }}</p>
+                <p>{{ rev.headline }} - {{ rev.rating }}</p>
+                <div class="ticket_review">
+                    {% include 'reviewer/detail_ticket.html' with ticket=rev.ticket %}
+                </div>
+                {% if element.button == 'create' %}
+                    <form action="{% url 'reviewer:create_review' %}" method="get">
+                        <input type="hidden" name="ticket_id" value="{{rev.ticket_id}}">
+                        <input type="submit" value="Créer une critique">
+                    </form>
+                {% elif element.button == 'modify' %}
+                    <form action="{% url 'reviewer:create_review' %}" method="get">
+                        <input type="hidden" name="ticket_id" value="{{rev.ticket_id}}">
+                        <input type="submit" value="Modifier">
+                    </form>
+                {% endif %}
+            </div>
+            {% endwith %}
+        {% else %}
+            {% with ticket=element.ticket%}
+            <div class="ticket">
+                {% if request.user == ticket.user %}
+                    <p>Vous avez demandé une critique</p>
+                {% else %}
+                    <p>{{ ticket.user }} a demandé une critique</p>
+                {% endif %}
+                <p>{{ ticket.time_created }}</p>
+                <p>{{ ticket.title }} - {{ ticket.rating }}</p>
+                {% if element.button == 'create' %}
+                    <form action="{% url 'reviewer:create_review' %}" method="get">
+                        <input type="hidden" name="ticket_id" value="{{ticket.id}}">
+                        <input type="submit" value="Créer une critique">
+                    </form>
+                {% elif element.button == 'modify' %}
+                    <form action="{% url 'reviewer:create_review' %}" method="get">
+                        <input type="hidden" name="ticket_id" value="{{rev.ticket_id}}">
+                        <input type="submit" value="Modifier">
+                    </form>
+                {% endif %}
+            </div>
+            {% endwith %}
+        {% endif %}
+    {% endfor %}
 {% endblock content %}
 

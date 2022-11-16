@@ -6,7 +6,7 @@ from django.db import models
 class Ticket(models.Model):
     title = models.CharField('Titre', max_length=128)
     description = models.TextField(max_length=2048, blank=True)
-    user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tickets')
     image = models.ImageField(null=True, blank=True)
     time_created = models.DateTimeField(auto_now_add=True)
 
@@ -20,15 +20,20 @@ class Review(models.Model):
         GOOD = 4
         PERFECT = 5
 
-    ticket = models.ForeignKey(to=Ticket, on_delete=models.CASCADE)
+    # ticket.reviews will give us list of review which ticket corresponds to the current ticket.
+    ticket = models.ForeignKey(to=Ticket, on_delete=models.CASCADE, related_name='reviews')
     rating = models.IntegerField(choices=Ratings.choices)
     user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        related_name='reviews',
     )
     headline = models.CharField('Titre', max_length=128)
     body = models.TextField('Commentaire', max_length=8192, blank=True)
     time_created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('ticket', 'user', )  # a user can't make 2 reviews of the same ticket
 
 
 class UserFollows(models.Model):
