@@ -7,6 +7,9 @@
 {% block content %}
     <p>Flux</p>
     {% for element in flux_elements %}
+        {% comment %}
+            element is either a review
+        {% endcomment %}
         {% if element.review %}
             {% with rev=element.review %}
             <div class="review">
@@ -17,22 +20,23 @@
                 {% endif %}
                 <p>{{ rev.time_created }}</p>
                 <p>{{ rev.headline }} - {{ rev.rating }}</p>
+                {% comment %}
+                    containing a ticket
+                {% endcomment %}
                 <div class="ticket_review">
                     {% include 'reviewer/detail_ticket.html' with ticket=rev.ticket %}
                 </div>
                 {% if element.button == 'create' %}
-                    <form action="{% url 'reviewer:create_review' %}" method="get">
-                        <input type="hidden" name="ticket_id" value="{{rev.ticket_id}}">
-                        <input type="submit" value="Créer une critique">
-                    </form>
+                    <a href="{% url 'reviewer:create_review' rev.ticket_id %}">Créer une critique</a>
                 {% elif element.button == 'modify' %}
-                    <form action="{% url 'reviewer:create_review' %}" method="get">
-                        <input type="hidden" name="ticket_id" value="{{rev.ticket_id}}">
-                        <input type="submit" value="Modifier">
-                    </form>
+                    <a href="{% url 'reviewer:update_review' rev.id %}">Modifier</a>
                 {% endif %}
             </div>
             {% endwith %}
+
+        {% comment %}
+            or element is a ticket
+        {% endcomment %}
         {% else %}
             {% with ticket=element.ticket%}
             <div class="ticket">
@@ -44,15 +48,9 @@
                 <p>{{ ticket.time_created }}</p>
                 <p>{{ ticket.title }} - {{ ticket.rating }}</p>
                 {% if element.button == 'create' %}
-                    <form action="{% url 'reviewer:create_review' %}" method="get">
-                        <input type="hidden" name="ticket_id" value="{{ticket.id}}">
-                        <input type="submit" value="Créer une critique">
-                    </form>
+                    <a href="{% url 'reviewer:create_review' ticket.id %}">Modifier</a>
                 {% elif element.button == 'modify' %}
-                    <form action="{% url 'reviewer:create_review' %}" method="get">
-                        <input type="hidden" name="ticket_id" value="{{rev.ticket_id}}">
-                        <input type="submit" value="Modifier">
-                    </form>
+                    <a href="{% url 'reviewer:update_ticket' ticket.id %}">Modifier</a>
                 {% endif %}
             </div>
             {% endwith %}

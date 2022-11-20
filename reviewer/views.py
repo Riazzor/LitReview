@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, DetailView, ListView, View
+from django.views.generic import CreateView, DetailView, ListView, UpdateView, View
 
 from .forms import MyAuthenticationForm, MyUserCreationForm, ReviewForm, TicketForm
 from .mixins import AnonymousMixins
@@ -191,7 +191,7 @@ ERROR = {
 
 class SearchUserView(LoginRequiredMixin, ListView):
     """
-    View gives the list of users followed and the list of following users.
+    View gives the list of users followed and the list of is_following users.
     """
     template_name = 'reviewer/list_followed_user.html'
     model = User
@@ -203,10 +203,12 @@ class SearchUserView(LoginRequiredMixin, ListView):
         pk = self.request.user.pk
         if name := self.request.GET.get('name'):
             users = super().get_queryset(*args, **kwargs).exclude(pk=pk).filter(username__icontains=name)
-            user_followed = [user.followed_user for user in UserFollows.objects.filter(
-                user=self.request.user)]  # WTF ???
+            user_followed = [
+                user.followed_user
+                for user in self.request.user.is_following.all()
+            ]
             for user in users:
-                if user not in user_followed and user:  # WTF 2 ???
+                if user not in user_followed:
                     searched_users.append(user)
             if not searched_users:
                 self.no_user_found = True
@@ -232,7 +234,7 @@ class SubscribeView(View):
 
     def post(self, request, *args, **kwargs):
         # check if user not already followed
-        if self.request.user.following.filter(followed_user_id=self.request.POST.get('id')):
+        if self.request.user.is_following.filter(followed_user_id=self.request.POST.get('id')):
             return redirect(reverse('reviewer:list_subscriber') + '?error=subscription_exist')
         UserFollows.objects.create(user=self.request.user, followed_user_id=self.request.POST.get('id'))
         return redirect(reverse('reviewer:list_subscriber'))
@@ -248,3 +250,27 @@ class UnsubscribeView(View):
             error = "?error=no_subscription"
         subscription.delete()
         return redirect(reverse('reviewer:list_subscriber') + error)
+
+
+class UpdateTicketView(UpdateView):
+    template_name = 'reviewer/update_ticket.html'
+    model = Ticket
+    # fields = ['title', 'description', 'image']
+    # http_method_names = ['post']
+    success_url = reverse_lazy('reviewer:list_review')
+    extra_context = {
+        'submit_button': 'Modifier',
+    }
+    form_class = TicketForm
+
+
+class UpdateReviewView(UpdateView):
+    template_name = 'reviewer/update_review.html'
+    model = Review
+    # fields = ['rating', 'headline', 'body']
+    # http_method_names = 'post']
+    success_url = reverse_lazy('reviewer:list_review')
+    extra_context = {
+        'submit_button': 'Modifier',
+    }
+    form_class = ReviewForm
