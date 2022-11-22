@@ -255,8 +255,6 @@ class UnsubscribeView(View):
 class UpdateTicketView(UpdateView):
     template_name = 'reviewer/update_ticket.html'
     model = Ticket
-    # fields = ['title', 'description', 'image']
-    # http_method_names = ['post']
     success_url = reverse_lazy('reviewer:list_review')
     extra_context = {
         'submit_button': 'Modifier',
@@ -267,8 +265,6 @@ class UpdateTicketView(UpdateView):
 class UpdateReviewView(UpdateView):
     template_name = 'reviewer/update_review.html'
     model = Review
-    # fields = ['rating', 'headline', 'body']
-    # http_method_names = 'post']
     success_url = reverse_lazy('reviewer:list_review')
     extra_context = {
         'submit_button': 'Modifier',
