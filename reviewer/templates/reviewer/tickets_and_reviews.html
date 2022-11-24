@@ -48,13 +48,15 @@
                 <p>{{ ticket.time_created }}</p>
                 <p>{{ ticket.title }} - {{ ticket.rating }}</p>
                 {% if element.button == 'create' %}
-                    <a href="{% url 'reviewer:create_review' ticket.id %}">Modifier</a>
+                    <a href="{% url 'reviewer:create_review' ticket.id %}">Créer une critique</a>
                 {% elif element.button == 'modify' %}
                     <a href="{% url 'reviewer:update_ticket' ticket.id %}">Modifier</a>
                 {% endif %}
             </div>
             {% endwith %}
         {% endif %}
+        <br>
+        
     {% endfor %}
 {% endblock content %}
 

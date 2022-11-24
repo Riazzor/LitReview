@@ -1,6 +1,4 @@
-<!-- TODO : enctype messing with other forms ? -->
-
-<form action="" method="post" enctype="multipart/form-data">
+<form action="" method="post" enctype="{{ enctype|yesno:'multipart/form-data,application/x-www-form-urlencoded' }}">
     {% include 'reviewer/form/header.html' %}
     {% include 'reviewer/form/field.html' %}
     {% include 'reviewer/form/footer.html' %}

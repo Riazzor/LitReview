@@ -48,11 +48,12 @@ class HomePage(LoginRequiredMixin, TemplateView):
 
 class CreateTicketView(LoginRequiredMixin, CreateView):
     template_name = 'reviewer/create_ticket.html'
-    success_url = reverse_lazy('reviewer:list_ticket')
+    success_url = reverse_lazy('reviewer:flux ')
     model = Ticket
     form_class = TicketForm
     extra_context = {
         'submit_button': 'Envoyer',
+        'enctype': 'multipart/form-data',
     }
 
     def form_valid(self, form):
@@ -72,7 +73,7 @@ class FluxView(LoginRequiredMixin, ListView):
     including those whom don't belongs to the loged user.
     """
     model = Ticket
-    template_name = 'reviewer/list_ticket.html'
+    template_name = 'reviewer/tickets_and_reviews.html'
     context_object_name = 'flux_elements'
 
     def get_queryset(self):
@@ -128,7 +129,7 @@ class FluxView(LoginRequiredMixin, ListView):
 
 class CreateReviewFromTicketView(LoginRequiredMixin, CreateView):
     template_name = 'reviewer/create_review.html'
-    success_url = reverse_lazy('reviewer:list_review')
+    success_url = reverse_lazy('reviewer:my_posts')
     model = Review
     form_class = ReviewForm
     extra_context = {
@@ -137,7 +138,7 @@ class CreateReviewFromTicketView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.ticket_id = self.request.GET.get('ticket_id')
+        form.instance.ticket_id = self.kwargs.get('pk')
         return super().form_valid(form)
 
 
@@ -147,10 +148,11 @@ class CurrentUserPostsView(LoginRequiredMixin, ListView):
     the current user.
     """
     model = Review
-    template_name = 'reviewer/list_ticket.html'
+    template_name = 'reviewer/tickets_and_reviews.html'
     context_object_name = 'flux_elements'
 
     def get_queryset(self):
+        # TODO : using just user.tickets should be fine.
         user_id = self.request.user.id
         intermediate_queryset = []
         intermediate_queryset.extend(super().get_queryset().filter(user_id=user_id))
@@ -255,7 +257,7 @@ class UnsubscribeView(View):
 class UpdateTicketView(UpdateView):
     template_name = 'reviewer/update_ticket.html'
     model = Ticket
-    success_url = reverse_lazy('reviewer:list_review')
+    success_url = reverse_lazy('reviewer:my_posts')
     extra_context = {
         'submit_button': 'Modifier',
     }
@@ -265,7 +267,7 @@ class UpdateTicketView(UpdateView):
 class UpdateReviewView(UpdateView):
     template_name = 'reviewer/update_review.html'
     model = Review
-    success_url = reverse_lazy('reviewer:list_review')
+    success_url = reverse_lazy('reviewer:my_posts')
     extra_context = {
         'submit_button': 'Modifier',
     }
