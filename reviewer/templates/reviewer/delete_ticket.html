@@ -1,0 +1,14 @@
+{% extends 'squeleton.html' %}
+
+{% block title %}
+    <title>Supprimer ticket</title>
+{% endblock title %}
+
+{% block content %}
+<a href="{% url 'reviewer:my_posts' %}">Retour</a>
+    <h2>Êtes-vous sûr de vouloir supprimer ce ticket ?</h2>
+    {% include 'reviewer/detail_ticket.html' with ticket=ticket %}
+
+{% include 'reviewer/form/full.html' %}
+{% endblock content %}
+

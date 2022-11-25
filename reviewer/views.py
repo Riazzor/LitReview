@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, DetailView, ListView, UpdateView, View
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View
 
 from .forms import MyAuthenticationForm, MyUserCreationForm, ReviewForm, TicketForm
 from .mixins import AnonymousMixins
@@ -59,6 +59,16 @@ class CreateTicketView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
+
+
+class DeleteTicketView(LoginRequiredMixin, DeleteView):
+    model = Ticket
+    template_name = 'reviewer/delete_ticket.html'
+    context_object_name = 'ticket'
+    success_url = reverse_lazy('reviewer:my_posts')
+    extra_context = {
+        'submit_button': 'Confirmer'
+    }
 
 
 class DetailTicketView(LoginRequiredMixin, DetailView):
@@ -140,6 +150,16 @@ class CreateReviewFromTicketView(LoginRequiredMixin, CreateView):
         form.instance.user = self.request.user
         form.instance.ticket_id = self.kwargs.get('pk')
         return super().form_valid(form)
+
+
+class DeleteReviewView(LoginRequiredMixin, DeleteView):
+    model = Review
+    template_name = 'reviewer/delete_review.html'
+    context_object_name = 'review'
+    success_url = reverse_lazy('reviewer:my_posts')
+    extra_context = {
+        'submit_button': 'Confirmer'
+    }
 
 
 class CurrentUserPostsView(LoginRequiredMixin, ListView):
