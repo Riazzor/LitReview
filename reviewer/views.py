@@ -93,6 +93,7 @@ class FluxView(LoginRequiredMixin, ListView):
         for sorting by time_created.
         """
         tickets = super().get_queryset()
+        current_user = self.request.user
         # We fetch reviews of already reviewed tickets in the same list to sort by time_created :
         intermediate_queryset = []
         # id of ticket already reviewed by current user :
@@ -101,10 +102,19 @@ class FluxView(LoginRequiredMixin, ListView):
             intermediate_queryset.append(ticket)
             if reviews := ticket.reviews.all():
                 for review in reviews:
-                    if review.user_id == self.request.user.id:
+                    if review.user_id == current_user.id:
                         reviewed_ticket_id.append(review.ticket_id)
                 intermediate_queryset.extend(reviews)
         intermediate_queryset.sort(key=lambda elem: elem.time_created, reverse=True)
+
+        def is_not_own_or_followed_post(elem):
+            """
+            We should display only post from self or followed user.
+            """
+            return (
+                elem.user.id != current_user.id
+                and elem.user not in [user.followed_user for user in current_user.is_following.all()]
+            )
 
         # Creating dict for each element. ==>
         # {
@@ -117,6 +127,8 @@ class FluxView(LoginRequiredMixin, ListView):
         for elem in intermediate_queryset:
             button = 'create'
             if type(elem) == Review:
+                if is_not_own_or_followed_post(elem):
+                    continue
                 if elem.ticket_id in reviewed_ticket_id:
                     button = ''
                 flux_elements = {
@@ -125,6 +137,8 @@ class FluxView(LoginRequiredMixin, ListView):
                     'ticket': None,
                 }
             else:
+                if is_not_own_or_followed_post(elem):
+                    continue
                 if elem.id in reviewed_ticket_id:
                     button = ''
                 flux_elements = {
@@ -162,7 +176,6 @@ class CreateReviewWithoutTicketView(LoginRequiredMixin, FormView):
     }
 
     def form_valid(self, form):
-        # TODO : rewrite save method in form.
         user = self.request.user
         ticket = Ticket.objects.create(
             user=user,
@@ -197,6 +210,7 @@ class DeleteReviewView(LoginRequiredMixin, DeleteView):
 
 class CurrentUserPostsView(LoginRequiredMixin, ListView):
     """
+    'The posts'
     This is the list of tickets and reviews created by
     the current user.
     """
@@ -205,11 +219,10 @@ class CurrentUserPostsView(LoginRequiredMixin, ListView):
     context_object_name = 'flux_elements'
 
     def get_queryset(self):
-        # TODO : using just user.tickets should be fine.
-        user_id = self.request.user.id
+        user = self.request.user
         intermediate_queryset = []
-        intermediate_queryset.extend(super().get_queryset().filter(user_id=user_id))
-        intermediate_queryset.extend(Ticket.objects.filter(user_id=user_id))
+        intermediate_queryset.extend(user.reviews.all())
+        intermediate_queryset.extend(user.tickets.all())
         intermediate_queryset.sort(key=lambda elem: elem.time_created, reverse=True)
 
         # Creating dict for each element. ==>

@@ -3,3 +3,4 @@ Pipfile*
 __*
 migrations*
 media/
+specs/
