@@ -18,8 +18,9 @@ urlpatterns = [
 
     path('review-update/<int:pk>/', views.UpdateReviewView.as_view(), name='update_review'),
     path('review-create/<int:pk>/', views.CreateReviewFromTicketView.as_view(), name='create_review'),
+    path('review-ticket-create/', views.CreateReviewWithoutTicketView.as_view(), name='create_review_ticket'),
     path('review-delete/<int:pk>/', views.DeleteReviewView.as_view(), name='delete_review'),
-    
+
     path('subscription/', views.SearchUserView.as_view(), name='list_subscriber'),
     path('subscribe/', views.SubscribeView.as_view(), name='subscribe'),
     path('unsubscribe/', views.UnsubscribeView.as_view(), name='unsubscribe'),

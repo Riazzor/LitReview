@@ -4,9 +4,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View
+from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, UpdateView, View
 
-from .forms import MyAuthenticationForm, MyUserCreationForm, ReviewForm, TicketForm
+from .forms import MyAuthenticationForm, MyUserCreationForm, ReviewFromTicketForm, ReviewWithoutTicketForm, TicketForm
 from .mixins import AnonymousMixins
 from .models import Review, Ticket, UserFollows
 
@@ -141,7 +141,7 @@ class CreateReviewFromTicketView(LoginRequiredMixin, CreateView):
     template_name = 'reviewer/create_review.html'
     success_url = reverse_lazy('reviewer:my_posts')
     model = Review
-    form_class = ReviewForm
+    form_class = ReviewFromTicketForm
     extra_context = {
         'submit_button': 'Envoyer',
     }
@@ -149,6 +149,39 @@ class CreateReviewFromTicketView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.ticket_id = self.kwargs.get('pk')
+        return super().form_valid(form)
+
+
+class CreateReviewWithoutTicketView(LoginRequiredMixin, FormView):
+    template_name = 'reviewer/create_review.html'
+    success_url = reverse_lazy('reviewer:my_posts')
+    form_class = ReviewWithoutTicketForm
+    extra_context = {
+        'submit_button': 'Envoyer',
+        'enctype': 'multipart/form-data',
+    }
+
+    def form_valid(self, form):
+        # TODO : rewrite save method in form.
+        user = self.request.user
+        ticket = Ticket.objects.create(
+            user=user,
+            **{
+                'title': form.cleaned_data['title'],
+                'description': form.cleaned_data['description'],
+                'image': form.cleaned_data['image'],
+            }
+        )
+        Review.objects.create(
+            user=user,
+            **{
+                'ticket': ticket,
+                'rating': form.cleaned_data['rating'],
+                'headline': form.cleaned_data['headline'],
+                'body': form.cleaned_data['body'],
+                'time_created': ticket.time_created,
+            }
+        )
         return super().form_valid(form)
 
 
@@ -291,4 +324,4 @@ class UpdateReviewView(UpdateView):
     extra_context = {
         'submit_button': 'Modifier',
     }
-    form_class = ReviewForm
+    form_class = ReviewFromTicketForm
