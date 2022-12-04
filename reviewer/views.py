@@ -122,7 +122,7 @@ class ReviewsAndTicketsMixin(LoginRequiredMixin, ListView):
         )
 
 
-class FluxView(ReviewsAndTicketsMixin):
+class FluxView(ReviewsAndTicketsMixin, LoginRequiredMixin):
     """
     The 'Flux'
     This is the list with all tickets and reviews
@@ -281,7 +281,7 @@ class SearchUserView(LoginRequiredMixin, ListView):
         return context
 
 
-class SubscribeView(View):
+class SubscribeView(LoginRequiredMixin, View):
     """
     A subscribe user inside of the user followed page. Supporting only POST method.
     """
@@ -294,7 +294,7 @@ class SubscribeView(View):
         return redirect(reverse('reviewer:list_subscriber'))
 
 
-class UnsubscribeView(View):
+class UnsubscribeView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         # check if subscription exist
         error = ''
@@ -304,7 +304,7 @@ class UnsubscribeView(View):
         return redirect(reverse('reviewer:list_subscriber') + error)
 
 
-class UpdateTicketView(UpdateView):
+class UpdateTicketView(LoginRequiredMixin, UpdateView):
     template_name = 'reviewer/update_ticket.html'
     model = Ticket
     success_url = reverse_lazy('reviewer:my_posts')
@@ -314,7 +314,7 @@ class UpdateTicketView(UpdateView):
     form_class = TicketForm
 
 
-class UpdateReviewView(UpdateView):
+class UpdateReviewView(LoginRequiredMixin, UpdateView):
     template_name = 'reviewer/update_review.html'
     model = Review
     success_url = reverse_lazy('reviewer:my_posts')

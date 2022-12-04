@@ -1,4 +1,4 @@
-# OCMovies-API: Test API providing movie information
+# LitReview : providing review for books.  
 
 ## - Installation
 
@@ -34,11 +34,11 @@ my_env is the name arbitrarily but you can change it.
 ## - Login :
 
 The admin account is :
-> login : Test_Admin
-> password : T€st_@dm1n
+> login : Test_Admin  
+> password : T€st_@dm1n  
 
 There are 5 accounts for test :
-> login : testAccount#
-> password : Azerty123+
+> login : testAccount#  
+> password : Azerty123+  
 
 *Replace # by number (1 to 5)*
