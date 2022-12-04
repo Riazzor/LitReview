@@ -1,9 +1,9 @@
-from django.contrib.auth.views import LoginView, LogoutView, TemplateView
+from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.contrib.auth import login
+from django.contrib.auth.views import LoginView, LogoutView, TemplateView
 from django.shortcuts import redirect
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, UpdateView, View
 
 from .forms import MyAuthenticationForm, MyUserCreationForm, ReviewFromTicketForm, ReviewWithoutTicketForm, TicketForm
