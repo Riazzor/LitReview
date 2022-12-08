@@ -1,0 +1,9 @@
+<p>{{ review.time_created }}</p>
+<p>{{ review.headline }} - {{ review.rating }}</p>
+{% if review.body %}
+    <p>Commentaire : {{ review.body }}</p>
+{% endif %}
+<div class="ticket_review">
+    {% include 'reviewer/detail_ticket.html' with ticket=review.ticket %}
+</div>
+

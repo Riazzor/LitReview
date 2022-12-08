@@ -1,0 +1,9 @@
+{% extends 'reviewer/tickets_and_reviews.html' %}
+
+{% block review_button %}
+    <a href="{% url 'reviewer:create_review' rev.ticket_id %}">Créer une critique</a>
+{% endblock %}
+
+{% block ticket_button %}
+    <a href="{% url 'reviewer:create_review' ticket.id %}">Créer une critique</a>
+{% endblock %}

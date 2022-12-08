@@ -8,7 +8,7 @@
     <p>Flux</p>
     {% for element in flux_elements %}
         {% comment %}
-            element is either a review
+            element is either a review containing a ticket
         {% endcomment %}
         {% if element.review %}
             {% with rev=element.review %}
@@ -18,20 +18,9 @@
                 {% else %}
                     <p>{{ rev.user }} a publié une critique</p>
                 {% endif %}
-                <p>{{ rev.time_created }}</p>
-                <p>{{ rev.headline }} - {{ rev.rating }}</p>
-                {% comment %}
-                    containing a ticket
-                {% endcomment %}
-                <div class="ticket_review">
-                    {% include 'reviewer/detail_ticket.html' with ticket=rev.ticket %}
-                </div>
-                {% if element.button == 'create' %}
-                    <a href="{% url 'reviewer:create_review' rev.ticket_id %}">Créer une critique</a>
-                {% elif element.button == 'modify' %}
-                    <a href="{% url 'reviewer:update_review' rev.id %}">Modifier</a>
-                    <a href="{% url 'reviewer:delete_review' rev.id %}">Supprimer</a>
-                {% endif %}
+                {% include 'reviewer/detail_review.html' with review=rev %}
+                {% block review_button %}
+                {% endblock %}
             </div>
             {% endwith %}
 
@@ -46,14 +35,9 @@
                 {% else %}
                     <p>{{ ticket.user }} a demandé une critique</p>
                 {% endif %}
-                <p>{{ ticket.time_created }}</p>
-                <p>{{ ticket.title }} - {{ ticket.rating }}</p>
-                {% if element.button == 'create' %}
-                    <a href="{% url 'reviewer:create_review' ticket.id %}">Créer une critique</a>
-                {% elif element.button == 'modify' %}
-                    <a href="{% url 'reviewer:update_ticket' ticket.id %}">Modifier</a>
-                    <a href="{% url 'reviewer:delete_ticket' ticket.id %}">Supprimer</a>
-                {% endif %}
+                {% include 'reviewer/detail_ticket.html' with ticket=ticket %}
+                {% block ticket_button %}
+                {% endblock %}
             </div>
             {% endwith %}
         {% endif %}

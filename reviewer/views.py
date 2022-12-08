@@ -76,15 +76,54 @@ class DetailTicketView(LoginRequiredMixin, DetailView):
     context_object_name = 'ticket'
 
 
-class FluxView(LoginRequiredMixin, ListView):
+class ReviewsAndTicketsMixin(LoginRequiredMixin, ListView):
+    context_object_name = 'flux_elements'
+
+    def create_flux_elements(self, intermediate_queryset) -> list:
+        """
+        Creating dict for each element. ==>
+        {
+          'review': review or None if is a review,
+          'ticket': ticket or None if is a ticket,
+        }
+        """
+        queryset = []
+        for elem in intermediate_queryset:
+            if type(elem) == Review:
+                if self.is_not_own_or_followed_post(elem):
+                    continue
+                flux_elements = {
+                    'review': elem,
+                    'ticket': None,
+                }
+            else:
+                if self.is_not_own_or_followed_post(elem):
+                    continue
+                flux_elements = {
+                    'review': None,
+                    'ticket': elem,
+                }
+            queryset.append(flux_elements)
+        return queryset
+
+    def is_not_own_or_followed_post(self, elem) -> bool:
+        """
+        We should display only post from self or followed user.
+        """
+        return (
+            elem.user.id != self.request.user.id
+            and elem.user not in [user.followed_user for user in self.request.user.is_following.all()]
+        )
+
+
+class FluxView(ReviewsAndTicketsMixin):
     """
     The 'Flux'
     This is the list with all tickets and reviews
     including those whom don't belongs to the loged user.
     """
     model = Ticket
-    template_name = 'reviewer/tickets_and_reviews.html'
-    context_object_name = 'flux_elements'
+    template_name = 'reviewer/flux.html'
 
     def get_queryset(self):
         """
@@ -93,7 +132,6 @@ class FluxView(LoginRequiredMixin, ListView):
         for sorting by time_created.
         """
         tickets = super().get_queryset()
-        current_user = self.request.user
         # We fetch reviews of already reviewed tickets in the same list to sort by time_created :
         intermediate_queryset = []
         # id of ticket already reviewed by current user :
@@ -102,52 +140,33 @@ class FluxView(LoginRequiredMixin, ListView):
             intermediate_queryset.append(ticket)
             if reviews := ticket.reviews.all():
                 for review in reviews:
-                    if review.user_id == current_user.id:
+                    if review.user_id == self.request.user.id:
                         reviewed_ticket_id.append(review.ticket_id)
                 intermediate_queryset.extend(reviews)
         intermediate_queryset.sort(key=lambda elem: elem.time_created, reverse=True)
 
-        def is_not_own_or_followed_post(elem):
-            """
-            We should display only post from self or followed user.
-            """
-            return (
-                elem.user.id != current_user.id
-                and elem.user not in [user.followed_user for user in current_user.is_following.all()]
-            )
+        queryset = self.create_flux_elements(intermediate_queryset)
 
-        # Creating dict for each element. ==>
-        # {
-        #   'button': create | '' if not already reviewed by current user,
-        #   'review': review or None if is a review,
-        #   'ticket': ticket or None if is a ticket,
-        # }
-        # for each tickets, if not already reviewed by current user, create button :
-        queryset = []
-        for elem in intermediate_queryset:
-            button = 'create'
-            if type(elem) == Review:
-                if is_not_own_or_followed_post(elem):
-                    continue
-                if elem.ticket_id in reviewed_ticket_id:
-                    button = ''
-                flux_elements = {
-                    'button': button,
-                    'review': elem,
-                    'ticket': None,
-                }
-            else:
-                if is_not_own_or_followed_post(elem):
-                    continue
-                if elem.id in reviewed_ticket_id:
-                    button = ''
-                flux_elements = {
-                    'button': button,
-                    'review': None,
-                    'ticket': elem,
-                }
-            queryset.append(flux_elements)
+        return queryset
 
+
+class CurrentUserPostsView(ReviewsAndTicketsMixin):
+    """
+            'The posts'
+        This is the list of tickets and reviews created by
+        the current user.
+        """
+    model = Review
+    template_name = 'reviewer/my_posts.html'
+
+    def get_queryset(self):
+        user = self.request.user
+        intermediate_queryset = []
+        intermediate_queryset.extend(user.reviews.all())
+        intermediate_queryset.extend(user.tickets.all())
+        intermediate_queryset.sort(key=lambda elem: elem.time_created, reverse=True)
+
+        queryset = self.create_flux_elements(intermediate_queryset)
         return queryset
 
 
@@ -206,49 +225,6 @@ class DeleteReviewView(LoginRequiredMixin, DeleteView):
     extra_context = {
         'submit_button': 'Confirmer'
     }
-
-
-class CurrentUserPostsView(LoginRequiredMixin, ListView):
-    """
-    'The posts'
-    This is the list of tickets and reviews created by
-    the current user.
-    """
-    model = Review
-    template_name = 'reviewer/tickets_and_reviews.html'
-    context_object_name = 'flux_elements'
-
-    def get_queryset(self):
-        user = self.request.user
-        intermediate_queryset = []
-        intermediate_queryset.extend(user.reviews.all())
-        intermediate_queryset.extend(user.tickets.all())
-        intermediate_queryset.sort(key=lambda elem: elem.time_created, reverse=True)
-
-        # Creating dict for each element. ==>
-        # {
-        #   'button': modify,
-        #   'review': review or None if is a review,
-        #   'ticket': ticket or None if is a ticket,
-        # }
-        # for each tickets, if not already reviewed by current user, create button :
-        queryset = []
-        for elem in intermediate_queryset:
-            button = 'modify'
-            if type(elem) == Review:
-                flux_elements = {
-                    'button': button,
-                    'review': elem,
-                    'ticket': None,
-                }
-            else:
-                flux_elements = {
-                    'button': button,
-                    'review': None,
-                    'ticket': elem,
-                }
-            queryset.append(flux_elements)
-        return queryset
 
 
 ERROR = {

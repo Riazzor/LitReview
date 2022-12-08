@@ -1,2 +1,8 @@
 <p>Ticket - {{ ticket.user }}</p>
-<p>{{ ticket.title }}</p>
+<p>Titre : {{ ticket.title }}</p>
+{% if ticket.description %}
+    <p>Description : {{ ticket.description }}</p>
+{% endif %}
+{% if ticket.image %}
+    <img src="{{ ticket.image.url }}" alt="ticket_image">
+{% endif %}

@@ -1,0 +1,11 @@
+{% extends 'reviewer/tickets_and_reviews.html' %}
+
+{% block review_button %}
+    <a href="{% url 'reviewer:update_review' rev.id %}">Modifier</a>
+    <a href="{% url 'reviewer:delete_review' rev.id %}">Supprimer</a>
+{% endblock %}
+
+{% block ticket_button %}
+    <a href="{% url 'reviewer:update_ticket' ticket.id %}">Modifier</a>
+    <a href="{% url 'reviewer:delete_ticket' ticket.id %}">Supprimer</a>
+{% endblock %}
