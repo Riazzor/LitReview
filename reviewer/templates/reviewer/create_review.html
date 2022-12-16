@@ -4,8 +4,15 @@
     <title>Creation de critique</title>
 {% endblock title %}
 
+
 {% block content %}
-    <p>Création de critique</p>
+    <div class="border border-dark p-3">
+        <h4>Vous êtes en tain de poster en réponse à :</h4>
+        <div class="container col-md-8 border border-dark">
+            {% include 'reviewer/detail_ticket.html' with ticket=ticket %}
+        </div>
+    </div>
+    <h2>Création de critique</h2>
     {% include 'reviewer/form/full.html' %}
 {% endblock content %}
 

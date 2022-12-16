@@ -6,8 +6,15 @@
 
 {% block content %}
 <a href="{% url 'reviewer:my_posts' %}">Retour</a>
-    <h2>Êtes-vous sûr de vouloir supprimer ce ticket ?</h2>
-    {% include 'reviewer/detail_ticket.html' with ticket=ticket %}
+
+<div class="border border-dark p-3 my-3">
+    <div class="row">
+        <div class="col">
+            <h2>Êtes-vous sûr de vouloir supprimer ce ticket ?</h2>
+            {% include 'reviewer/detail_ticket.html' with ticket=ticket %}
+        </div>
+    </div>
+</div>
 
 {% include 'reviewer/form/full.html' %}
 {% endblock content %}

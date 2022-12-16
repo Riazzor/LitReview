@@ -1,9 +1,26 @@
 {% extends 'reviewer/tickets_and_reviews.html' %}
 
+{% block content_title %}
+    Votre flux
+{% endblock %}
+{% block content_header %}
+    <div class="row justify-content-center gap-3 my-3">
+        <a class="btn btn-outline-success col-3" href="{% url 'reviewer:create_ticket' %}">Créer un ticket</a>
+        <a class="btn btn-outline-success col-3" href="{% url 'reviewer:create_review_ticket' %}">Créer une critique</a>
+    </div>
+{% endblock %}
 {% block review_button %}
-    <a href="{% url 'reviewer:create_review' rev.ticket_id %}">Créer une critique</a>
+    {% if rev.ticket.user.id != request.user.id and rev.user.id != request.user.id %}
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a class="btn btn-outline-dark" href="{% url 'reviewer:create_review' rev.ticket_id %}">Créer une critique</a>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block ticket_button %}
-    <a href="{% url 'reviewer:create_review' ticket.id %}">Créer une critique</a>
+    {% if ticket.user.id != request.user.id %}
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a class="btn btn-outline-dark" href="{% url 'reviewer:create_review' ticket.id %}">Créer une critique</a>
+        </div>
+    {% endif %}
 {% endblock %}

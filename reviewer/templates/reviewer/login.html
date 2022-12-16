@@ -5,9 +5,17 @@
 {% endblock title %}
 
 {% block content %}
-    <h2>Inscrivez-vous maintenant :</h2>
-    <a href="{% url 'reviewer:register' %}">Pas de compte ? S'inscrire</a>
+    <div class="container-md text-center">
+        <div class="row align-items-center">
+            <div class="col">
+                <h2 class="mb-3">Inscrivez-vous maintenant :</h2>
+                <a class="btn btn-primary" role="button" href="{% url 'reviewer:register' %}">S'inscrire</a>
+            </div>
+            <div class="col">
+                <h2 class="mb-3">Connectez-vous :</h2>
+                {% include 'reviewer/form/full.html' %}
+            </div>
+        </div>
+    </div>
 
-    <h2>Connectez-vous :</h2>
-{% include 'reviewer/form/full.html' %}
 {% endblock content %}

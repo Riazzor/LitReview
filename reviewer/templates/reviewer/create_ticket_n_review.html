@@ -1,0 +1,35 @@
+{% extends 'squeleton.html' %}
+
+{% block title %}
+    <title>Creation de critique</title>
+{% endblock title %}
+
+
+{% block content %}
+    <h2>Création de critique :</h2>
+    <div class="border border-dark p-3">
+        <h4>Livre / Article</h4>
+        <div class="container">
+            {% include 'reviewer/form/header.html' %}
+            {{ form.title.label }}
+            {{ form.title }}
+            {{ form.description.label }}
+            {{ form.description }}
+            {{ form.image.label }}
+            {{ form.image }}
+        </div>
+        <hr>
+        <h4>Critique</h4>
+        <div class="container">
+            {{ form.rating.label }}
+            {{ form.rating }}
+            {{ form.headline.label }}
+            {{ form.headline }}
+            {{ form.body.label }}
+            {{ form.body }}
+           {% include 'reviewer/form/footer.html' %}
+        </div>
+    </div>
+{% endblock content %}
+
+

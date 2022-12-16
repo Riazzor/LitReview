@@ -1,24 +1,34 @@
 {% extends 'squeleton.html' %}
+{% load static %}
 
 {% block title %}
     <title>Liste de ticket</title>
 {% endblock title %}
 
 {% block content %}
-    <p>Flux</p>
+    <h2>
+        {% block content_title %}
+        {% endblock %}
+    </h2>
+    {% block content_header %}
+    {% endblock %}
     {% for element in flux_elements %}
         {% comment %}
             element is either a review containing a ticket
         {% endcomment %}
         {% if element.review %}
             {% with rev=element.review %}
-            <div class="review">
-                {% if request.user == rev.user %}
-                    <p>Vous avez publié une critique</p>
-                {% else %}
-                    <p>{{ rev.user }} a publié une critique</p>
-                {% endif %}
-                {% include 'reviewer/detail_review.html' with review=rev %}
+            <div class="review border border-dark p-3">
+                <div class="row">
+                    <div class="col">
+                        {% if request.user == rev.user %}
+                            <p>Vous avez publié une critique</p>
+                        {% else %}
+                            <p>{{ rev.user }} a publié une critique</p>
+                        {% endif %}
+                    </div>
+                    {% include 'reviewer/detail_review.html' with review=rev %}
+                </div>
                 {% block review_button %}
                 {% endblock %}
             </div>
@@ -29,13 +39,21 @@
         {% endcomment %}
         {% else %}
             {% with ticket=element.ticket%}
-            <div class="ticket">
-                {% if request.user == ticket.user %}
-                    <p>Vous avez demandé une critique</p>
-                {% else %}
-                    <p>{{ ticket.user }} a demandé une critique</p>
-                {% endif %}
+            <div class="ticket border border-dark p-3">
+                <div class="row">
+                    <div class="col">
+                        {% if request.user == ticket.user %}
+                            <p>Vous avez demandé une critique</p>
+                        {% else %}
+                            <p>{{ ticket.user }} a demandé une critique</p>
+                        {% endif %}
+                    </div>
+                    <div class="col text-end">
+                        <p>{{ ticket.time_created }}</p>
+                    </div>
+                </div>
                 {% include 'reviewer/detail_ticket.html' with ticket=ticket %}
+                <!-- </div> -->
                 {% block ticket_button %}
                 {% endblock %}
             </div>

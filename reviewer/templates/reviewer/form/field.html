@@ -1,14 +1,14 @@
     {% for field in form.visible_fields %}
-        <div class="">
-            <label for="{{ field.id_for_label }}" class="">{{ field.label }}</label>
+        <div class="mb-3">
+            {% if field.label %}
+                <label for="{{ field.id_for_label }}" class="">{{ field.label }}</label>
+            {% endif %}
             {{ field }}
             {% if field.errors %}
-                <ul class="">
-                    {% for error in field.errors %}
-                        <li>{{ error|escape }}</li>
-                    {% endfor %}
-                </ul>
+                {% for error in field.errors %}
+                    <div class="invalid-feedback">{{ error|escape }}</div>
+                {% endfor %}
+                <div id="passwordHelpBlock" class="form-text">{{ field.help_text }}</div>
             {% endif %}
-            <div class="">{{ field.help_text }}</div>
         </div>
     {% endfor %}

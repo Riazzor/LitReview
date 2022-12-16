@@ -50,8 +50,20 @@ class MyUserCreationForm(UserCreationForm):
             }
         )
 
+        # Bootstrap class name for style
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'form-control'})
+
 
 class TicketForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Bootstrap class name for style
+        for field in self.fields.values():
+            class_name = {'class': 'form-control'}
+            field.widget.attrs.update(class_name)
+        print('finished here')
+
     class Meta:
         model = Ticket
         fields = ['title', 'description', 'image']
@@ -59,6 +71,14 @@ class TicketForm(forms.ModelForm):
 
 
 class ReviewFromTicketForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Bootstrap class name for style
+        for field in self.fields.values():
+            class_name = {'class': 'form-control'}
+            field.widget.attrs.update(class_name)
+        print('finished here')
+
     class Meta:
         model = Review
         fields = ['rating', 'headline', 'body']
@@ -75,6 +95,13 @@ class ReviewWithoutTicketForm(forms.Form):
     rating = forms.IntegerField()
     headline = forms.CharField(max_length=128)
     body = forms.CharField(max_length=8192, widget=Textarea, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Bootstrap class name for style
+        for field in self.fields.values():
+            class_name = {'class': 'form-control'}
+            field.widget.attrs.update(class_name)
 
     def clean_rating(self):
         rating = self.cleaned_data['rating']

@@ -9,4 +9,4 @@ class AnonymousMixins(UserPassesTestMixin):
         return True
 
     def handle_no_permission(self):
-        return redirect('reviewer:home')
+        return redirect('reviewer:flux')

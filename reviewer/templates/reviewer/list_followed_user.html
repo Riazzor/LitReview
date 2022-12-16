@@ -6,41 +6,56 @@
 
 {% block content %}
     {% if error %}
-    <p>{{ error }}</p>
+        <div class="alert alert-danger">
+           {{ error }}
+        </div>
     {% endif %}
-    <p>Suivre d'autres utilisateurs</p>
-    <form action="" method="GET">
-        <input type="search" name="name" placeholder="Recherche d'utilisateur">
-        <input type="submit" value="Envoyer">
+    <h4>Suivre d'autres utilisateurs</h4>
+    <form class="row g-3 m-3" action="" method="GET">
+        <div class="col">
+            <input class="form-control border-dark" type="search" name="name" placeholder="Recherche d'utilisateur" required>
+        </div>
+        <div class="col-3">
+            <input class="form-control btn btn-outline-success" type="submit" value="Envoyer">
+        </div>
     </form>
-    {% for user in searched_users %}
-    <p>{{ user.username }}</p>
-        <form action="{% url 'reviewer:subscribe' %}" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="id" value="{{ user.id }}">
-            <input type="submit" value="S'abonner">
-        </form>
-    {% endfor %}
+    {% if searched_users %}
+    <table class="table table-striped table-bordered border-dark">
+        {% for user in searched_users %}
+        <tr>
+            <td class="align-middle">{{ user.username }}</td>
+            <td class="col-md-2 text-center">
+                <a class="btn btn-primary btn-sm" href="{% url 'reviewer:subscribe' %}?user_id={{ user.id }}">
+                    S'abonner
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    <hr>
+    {% if followed_users %}
     <p>Abonnements</p>
-    <table>
+    <table class="table table-striped table-bordered border-dark">
         <tbody>
         {% for followed_user in followed_users %}
             <tr>
-                <td>{{ followed_user.followed_user }}</td>
-                <td>
-                    <form action="{% url 'reviewer:unsubscribe' %}" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="id" value="{{ followed_user.id }}">
-                        <input type="submit" value="Se désabonner">
-                    </form>
+                <td class="align-middle">{{ followed_user.followed_user }}</td>
+                <td class="col-md-2 text-center">
+                    <a class="btn btn-danger btn-sm" href="{% url 'reviewer:unsubscribe' %}?user_id={{ followed_user.id }}">
+                        Se désabonner
+                    </a>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-
+    {% else %}
+        <h4>Vous n'êtes pas abonné !</h4>
+    {% endif %}
+    <hr>
     <p>Abonnés</p>
-    <table>
+    <table class="table table-striped table-bordered border-dark">
         <tbody>
         {% for following_user in following_users %}
             <tr>

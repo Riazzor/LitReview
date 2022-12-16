@@ -10,12 +10,17 @@ from .forms import MyAuthenticationForm, MyUserCreationForm, ReviewFromTicketFor
 from .mixins import AnonymousMixins
 from .models import Review, Ticket, UserFollows
 
+# =========================================================================================
+# =========================================================================================
+# TODO : max width for image
+# =========================================================================================
+# =========================================================================================
 
 class MyLoginView(LoginView):
     template_name = 'reviewer/login.html'
     form_class = MyAuthenticationForm
     redirect_authenticated_user = True
-    success_url = reverse_lazy('reviewer:home')
+    success_url = reverse_lazy('reviewer:flux')
     extra_context = {
         'submit_button': 'Connexion',
     }
@@ -29,7 +34,7 @@ class MyRegisterView(AnonymousMixins, CreateView):
     template_name = 'reviewer/register.html'
     form_class = MyUserCreationForm
     redirect_authenticated_user = True
-    success_url = reverse_lazy('reviewer:home')
+    success_url = reverse_lazy('reviewer:flux')
     extra_context = {
         'submit_button': "S'inscrire",
     }
@@ -43,7 +48,8 @@ class MyRegisterView(AnonymousMixins, CreateView):
 
 
 class HomePage(LoginRequiredMixin, TemplateView):
-    template_name = 'reviewer/home.html'
+    def get(self, request, *args, **kwargs):
+        return redirect('reviewer:flux')
 
 
 class CreateTicketView(LoginRequiredMixin, CreateView):
@@ -179,6 +185,11 @@ class CreateReviewFromTicketView(LoginRequiredMixin, CreateView):
         'submit_button': 'Envoyer',
     }
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['ticket'] = Ticket.objects.get(pk=self.kwargs.get('pk'))
+        return context
+
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.ticket_id = self.kwargs.get('pk')
@@ -186,7 +197,7 @@ class CreateReviewFromTicketView(LoginRequiredMixin, CreateView):
 
 
 class CreateReviewWithoutTicketView(LoginRequiredMixin, FormView):
-    template_name = 'reviewer/create_review.html'
+    template_name = 'reviewer/create_ticket_n_review.html'
     success_url = reverse_lazy('reviewer:my_posts')
     form_class = ReviewWithoutTicketForm
     extra_context = {
@@ -274,23 +285,20 @@ class SubscribeView(View):
     """
     A subscribe user inside of the user followed page. Supporting only POST method.
     """
-    http_method_names = ['post']
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         # check if user not already followed
-        if self.request.user.is_following.filter(followed_user_id=self.request.POST.get('id')):
+        if self.request.user.is_following.filter(followed_user_id=self.request.GET.get('user_id')):
             return redirect(reverse('reviewer:list_subscriber') + '?error=subscription_exist')
-        UserFollows.objects.create(user=self.request.user, followed_user_id=self.request.POST.get('id'))
+        UserFollows.objects.create(user=self.request.user, followed_user_id=self.request.GET.get('user_id'))
         return redirect(reverse('reviewer:list_subscriber'))
 
 
 class UnsubscribeView(View):
-    http_method_names = ['post']
-
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         # check if subscription exist
         error = ''
-        if not (subscription := UserFollows.objects.filter(id=self.request.POST.get('id'))):
+        if not (subscription := UserFollows.objects.filter(id=self.request.GET.get('user_id'))):
             error = "?error=no_subscription"
         subscription.delete()
         return redirect(reverse('reviewer:list_subscriber') + error)

@@ -5,10 +5,12 @@
 {% endblock title %}
 
 {% block content %}
-    <h2>Inscription</h2>
     
-    {% include 'reviewer/form/full.html' %}
+    <div class="container text-center col-sm-10 col-md-3">
+        <h2>Inscrivez-vous</h2>
+        {% include 'reviewer/form/full.html' %}
+        <a href="{% url 'reviewer:login' %}">Déjà inscrit ? Se connecter</a>
+    </div>
     
-    <a href="{% url 'reviewer:login' %}">Déjà inscrit ? Se connecter</a>
 {% endblock content %}
 

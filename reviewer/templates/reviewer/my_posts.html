@@ -1,11 +1,18 @@
 {% extends 'reviewer/tickets_and_reviews.html' %}
 
+{% block content_title %}
+    Vos posts
+{% endblock %}
 {% block review_button %}
-    <a href="{% url 'reviewer:update_review' rev.id %}">Modifier</a>
-    <a href="{% url 'reviewer:delete_review' rev.id %}">Supprimer</a>
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <a class="btn btn-outline-dark" href="{% url 'reviewer:update_review' rev.id %}">Modifier</a>
+        <a class="btn btn-outline-danger" href="{% url 'reviewer:delete_review' rev.id %}">Supprimer</a>
+    </div>
 {% endblock %}
 
 {% block ticket_button %}
-    <a href="{% url 'reviewer:update_ticket' ticket.id %}">Modifier</a>
-    <a href="{% url 'reviewer:delete_ticket' ticket.id %}">Supprimer</a>
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <a class="btn btn-outline-dark" href="{% url 'reviewer:update_ticket' ticket.id %}">Modifier</a>
+        <a class="btn btn-outline-danger" href="{% url 'reviewer:delete_ticket' ticket.id %}">Supprimer</a>
+    </div>
 {% endblock %}
