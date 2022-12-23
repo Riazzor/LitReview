@@ -1,6 +1,6 @@
 Pipfile*
-*.sqlite3
 __*
-migrations*
-media/
+migrations/*
 specs/
+venv
+my_env*
