@@ -12,7 +12,7 @@ from .models import Review, Ticket, UserFollows
 
 # =========================================================================================
 # =========================================================================================
-# TODO : max width for image
+# TODO : error message when wrong credential
 # =========================================================================================
 # =========================================================================================
 
@@ -54,7 +54,7 @@ class HomePage(LoginRequiredMixin, TemplateView):
 
 class CreateTicketView(LoginRequiredMixin, CreateView):
     template_name = 'reviewer/create_ticket.html'
-    success_url = reverse_lazy('reviewer:flux ')
+    success_url = reverse_lazy('reviewer:flux')
     model = Ticket
     form_class = TicketForm
     extra_context = {
