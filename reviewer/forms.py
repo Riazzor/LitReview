@@ -62,7 +62,6 @@ class TicketForm(forms.ModelForm):
         for field in self.fields.values():
             class_name = {'class': 'form-control'}
             field.widget.attrs.update(class_name)
-        print('finished here')
 
     class Meta:
         model = Ticket
@@ -77,7 +76,6 @@ class ReviewFromTicketForm(forms.ModelForm):
         for field in self.fields.values():
             class_name = {'class': 'form-control'}
             field.widget.attrs.update(class_name)
-        print('finished here')
 
     class Meta:
         model = Review
@@ -87,14 +85,14 @@ class ReviewFromTicketForm(forms.ModelForm):
 
 class ReviewWithoutTicketForm(forms.Form):
     # Ticket fields
-    title = forms.CharField(max_length=128)
-    description = forms.CharField(max_length=2048, widget=Textarea, required=False)
-    image = forms.ImageField(required=False)
+    title = forms.CharField(label='Titre', max_length=128)
+    description = forms.CharField(label='Description', max_length=2048, widget=Textarea, required=False)
+    image = forms.ImageField(label='Image', required=False)
 
     # Review fields
-    rating = forms.IntegerField()
-    headline = forms.CharField(max_length=128)
-    body = forms.CharField(max_length=8192, widget=Textarea, required=False)
+    rating = forms.IntegerField(label='Note')
+    headline = forms.CharField(label='Titre', max_length=128)
+    body = forms.CharField(label='Commentaire', max_length=8192, widget=Textarea, required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
