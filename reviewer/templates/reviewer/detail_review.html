@@ -1,7 +1,11 @@
+{% load static %}
+
 <div class="col text-end">
     <p>{{ review.time_created }}</p>
 </div>
-<p>{{ review.headline }} - {{ review.rating }}</p>
+<p>{{ review.headline }} - 
+    <img src="{% static 'reviewer/image/'|add:image %}" alt="LitReview" width="60" height="15">
+</p>
 {% if review.body %}
     <p>Commentaire : {{ review.body }}</p>
 {% endif %}

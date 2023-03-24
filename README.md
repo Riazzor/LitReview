@@ -23,9 +23,6 @@ my_env is the name arbitrarily but you can change it.
 ## <ins>Installing dependencies :</ins>
 
 > `pip install -r requirements.txt`  
-> `python manage.py makemigrations`  
-> `python manage.py migrate`  
-
 
 ## - Launching :
 

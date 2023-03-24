@@ -82,7 +82,7 @@ class DetailTicketView(LoginRequiredMixin, DetailView):
     context_object_name = 'ticket'
 
 
-class ReviewsAndTicketsMixin(LoginRequiredMixin, ListView):
+class ReviewsAndTicketsAdapter(ListView):
     context_object_name = 'flux_elements'
 
     def create_flux_elements(self, intermediate_queryset) -> list:
@@ -96,15 +96,12 @@ class ReviewsAndTicketsMixin(LoginRequiredMixin, ListView):
         queryset = []
         for elem in intermediate_queryset:
             if type(elem) == Review:
-                if self.is_not_own_or_followed_post(elem):
-                    continue
                 flux_elements = {
                     'review': elem,
                     'ticket': None,
+                    'rating': f'star_{elem.rating}.png'
                 }
             else:
-                if self.is_not_own_or_followed_post(elem):
-                    continue
                 flux_elements = {
                     'review': None,
                     'ticket': elem,
@@ -112,17 +109,8 @@ class ReviewsAndTicketsMixin(LoginRequiredMixin, ListView):
             queryset.append(flux_elements)
         return queryset
 
-    def is_not_own_or_followed_post(self, elem) -> bool:
-        """
-        We should display only post from self or followed user.
-        """
-        return (
-            elem.user.id != self.request.user.id
-            and elem.user not in [user.followed_user for user in self.request.user.is_following.all()]
-        )
 
-
-class FluxView(ReviewsAndTicketsMixin, LoginRequiredMixin):
+class FluxView(LoginRequiredMixin, ReviewsAndTicketsAdapter):
     """
     The 'Flux'
     This is the list with all tickets and reviews
@@ -137,7 +125,17 @@ class FluxView(ReviewsAndTicketsMixin, LoginRequiredMixin):
         The reason they are not in two separate context is because this way is easier
         for sorting by time_created.
         """
-        tickets = super().get_queryset()
+        followed_users_queryset = UserFollows.objects.filter(
+            user=self.request.user
+        ).values_list('followed_user', flat=True)
+
+        # We add the current user to display followed_users and own's tickets.
+        followed_users = [self.request.user]
+        # This loop is just to avoid loading the whole result in memory :
+        for user in followed_users_queryset:
+            followed_users.append(user)
+
+        tickets = super().get_queryset().filter(user__in=followed_users)
         # We fetch reviews of already reviewed tickets in the same list to sort by time_created :
         intermediate_queryset = []
         # id of ticket already reviewed by current user :
@@ -156,9 +154,9 @@ class FluxView(ReviewsAndTicketsMixin, LoginRequiredMixin):
         return queryset
 
 
-class CurrentUserPostsView(ReviewsAndTicketsMixin):
+class CurrentUserPostsView(LoginRequiredMixin, ReviewsAndTicketsAdapter):
     """
-            'The posts'
+        'The posts'
         This is the list of tickets and reviews created by
         the current user.
         """
@@ -310,6 +308,7 @@ class UpdateTicketView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('reviewer:my_posts')
     extra_context = {
         'submit_button': 'Modifier',
+        'enctype': 'multipart/form-data',
     }
     form_class = TicketForm
 

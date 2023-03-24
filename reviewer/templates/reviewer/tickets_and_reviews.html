@@ -27,7 +27,7 @@
                             <p>{{ rev.user }} a publié une critique</p>
                         {% endif %}
                     </div>
-                    {% include 'reviewer/detail_review.html' with review=rev %}
+                    {% include 'reviewer/detail_review.html' with review=rev image=element.rating %}
                 </div>
                 {% block review_button %}
                 {% endblock %}
@@ -53,7 +53,6 @@
                     </div>
                 </div>
                 {% include 'reviewer/detail_ticket.html' with ticket=ticket %}
-                <!-- </div> -->
                 {% block ticket_button %}
                 {% endblock %}
             </div>

@@ -11,16 +11,18 @@
 </head>
 
 <body>
-    <!-- {% block header_bar %} -->
-    <!-- {% endblock header_bar %} -->
     <nav class="navbar bg-light row mb-3">
-        <div class="container col-md-4 offset-md-6">
-            <img src="{% static 'reviewer/image/logo.png' %}" alt="LitReview" width="50" height="60">
+        <div class="container col-md-8 offset-md-2 text-center">
             {% if request.user.is_authenticated %}
+                <p class="col-md-5 mb-0">Bonjour {{ request.user }}</p>
+                <img src="{% static 'reviewer/image/logo.png' %}" alt="LitReview" width="50" height="60">
                 <a class="nav-link ml-3" href="{% url 'reviewer:flux' %}">Flux</a>
                 <a class="nav-link ml-3" href="{% url 'reviewer:my_posts' %}">Posts</a>
                 <a class="nav-link ml-3" href="{% url 'reviewer:list_subscriber' %}">Abonnements</a>
                 <a class="nav-link ml-3" href="{% url 'reviewer:logout' %}">Déconnexion</a>
+            {% else %}
+                <p class="col-md-5 mb-0">Bonjour visiteur</p>
+                <img src="{% static 'reviewer/image/logo.png' %}" alt="LitReview" width="50" height="60">
             {% endif %}
         </div>
     </nav>
